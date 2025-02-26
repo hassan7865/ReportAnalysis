@@ -24,21 +24,25 @@ function App() {
 
         if (jsonData && jsonData.length > 0) {
           const total = {
-            "0-5 Days": 0,
+            "0-1 Days": 0,
+            "2-3 Days": 0,
+            "4-5 Days":0,
             "6-10 Days": 0,
             "11-20 Days": 0,
             "21-30 Days": 0,
             "30+ Days": 0,
             "Grand Total": 0,
           };
-          const pivotResult = jsonData.reduce((acc, record) => {
+         const pivotResult = jsonData.reduce((acc, record) => {
             const destination = record.Destination;
             const days = getDaysSinceBooking(record);
             const bucket = getDayRangeBucket(days);
 
             if (!acc[destination]) {
               acc[destination] = {
-                "0-5 Days": 0,
+                "0-1 Days": 0,
+                "2-3 Days": 0,
+                "4-5 Days":0,
                 "6-10 Days": 0,
                 "11-20 Days": 0,
                 "21-30 Days": 0,
@@ -48,9 +52,16 @@ function App() {
             }
 
             total[bucket] += 1;
-            total["Grand Total"] += 1;
+
+            
+           
             acc[destination][bucket] += 1;
-            acc[destination]["Grand Total"] += 1;
+
+            if(bucket){
+              acc[destination]["Grand Total"] += 1;
+              total["Grand Total"] += 1;
+            }
+           
 
             return acc;
           }, {});
@@ -58,7 +69,9 @@ function App() {
           const pivotArray = Object.entries(pivotResult).map(
             ([destination, data]) => ({
               Destination: destination,
-              "0-5 Days": data["0-5 Days"],
+              "0-1 Days": data["0-1 Days"],
+              "2-3 Days": data["2-3 Days"],
+              "4-5 Days":data["4-5 Days"],
               "6-10 Days": data["6-10 Days"],
               "11-20 Days": data["11-20 Days"],
               "21-30 Days": data["21-30 Days"],
@@ -70,7 +83,9 @@ function App() {
           const grandTotalRow = [
             {
               Category: "Grand Total",
-              "0-5 Days": total["0-5 Days"],
+              "0-1 Days": total["0-1 Days"],
+              "2-3 Days": total["2-3 Days"],
+              "4-5 Days":total["4-5 Days"],
               "6-10 Days": total["6-10 Days"],
               "11-20 Days": total["11-20 Days"],
               "21-30 Days": total["21-30 Days"],
@@ -148,7 +163,9 @@ function App() {
   }
 
   function getDayRangeBucket(days) {
-    if (days >= 0 && days <= 5) return "0-5 Days";
+    if (days >= 0 && days <= 1) return "0-1 Days";
+    if (days >= 2 && days <= 3) return "2-3 Days";
+    if (days >= 4 && days <= 5) return "4-5 Days";
     if (days >= 6 && days <= 10) return "6-10 Days";
     if (days >= 11 && days <= 20) return "11-20 Days";
     if (days >= 21 && days <= 30) return "21-30 Days";
